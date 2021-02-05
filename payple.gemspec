@@ -3,7 +3,7 @@
 require_relative "lib/payple/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "payple-rest-client-ruby"
+  spec.name          = "payple"
   spec.version       = Payple::VERSION
   spec.authors       = ["Mewpot Corp."]
   spec.email         = ["karoid@mewpot.com"]
