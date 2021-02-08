@@ -49,19 +49,54 @@ module Payple
       # validate pay_type
       raise ArgumentError("Invalid pay_type: pay_type must by :card or :transfer") unless [:card, :transfer].include? options.fetch(:pay_type).to_sym
 
-      uri, payload = auth({PCD_PAYCHK_FLAG: "Y"})
-      payload.merge({PCD_PAYCHK_FLAG: "Y", PCD_PAY_TYPE: options.fetch(:pay_type),
-                     PCD_PAY_OID: options.fetch(:oid), PCD_PAY_DATE: options.fetch(:pay_date)}).merge(other_payloads)
+      url, payload = auth({PCD_PAYCHK_FLAG: "Y"})
+      payload.merge!({PCD_PAYCHK_FLAG: "Y", PCD_PAY_TYPE: options.fetch(:pay_type),
+                     PCD_PAY_OID: options.fetch(:oid), PCD_PAY_DATE: options.fetch(:pay_date)})
+      payload.merge!(other_payloads)
 
-      puts uri, payload
+      HTTParty.post(url, headers: headers, body: payload.to_json)
+    end
 
-      HTTParty.post(uri, headers: headers, body: payload.to_json)
+    def cert_confirm(options = {})
+      required_parameter = [:cert_url, :auth_key, :request_key]
+      other_payloads = options.reject { |key| required_parameter.include?(key) }
+
+      payload = {
+        PCD_CST_ID: config.cst_id,
+        PCD_CUST_KEY: config.cust_key,
+        PCD_AUTH_KEY: options.fetch(:auth_key),
+        PCD_PAY_REQKEY: options.fetch(:request_key),
+      }
+      payload.merge!(other_payloads)
+
+      HTTParty.post(options.fetch(:cert_url), headers: headers, body: payload.to_json)
+    end
+
+    def refund(options = {})
+      required_parameter = [:oid, :pay_date, :refund_total]
+      other_payloads = options.reject { |key| required_parameter.include?(key) }
+
+      url, payload = auth({PCD_PAYCANCEL_FLAG: "Y"})
+
+      pay_date = options.fetch(:pay_date)
+      pay_date = pay_date.strftime("%Y%m%d") if pay_date.respond_to?('strftime')
+
+      payload.merge!({
+        PCD_PAYCANCEL_FLAG: 'Y',
+        PCD_REFUND_KEY: config.refund_key,
+        PCD_PAY_OID: options.fetch(:oid),
+        PCD_PAY_DATE: pay_date,
+        PCD_REFUND_TOTAL: options.fetch(:refund_total)
+      })
+      payload.merge!(other_payloads)
+
+      HTTParty.post(url, headers: headers, body: payload.to_json)
     end
 
     # authorization to Payple
     # 필수가 아닌 파라미터를 req_params로 넘겨주어야 한다
     # return values:
-    #  - uri
+    #  - url
     #  - next request default payload data
     def auth(req_params = {})
       result = auth_raw(req_params)
@@ -76,12 +111,12 @@ module Payple
     end
 
     def auth_raw(req_params = {})
-      uri = "#{host}/php/auth.php"
+      url = "#{host}/php/auth.php"
       payload = {
           "cst_id": config.cst_id,
           "custKey": config.cust_key
       }
-      HTTParty.post(uri, headers: headers, body: payload.merge(req_params).to_json).parsed_response
+      HTTParty.post(url, headers: headers, body: payload.merge(req_params).to_json).parsed_response
     end
 
     private

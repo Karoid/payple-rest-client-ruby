@@ -40,6 +40,18 @@ def payple_auth
 end
 ```
 
+### CERT 승인하기
+```ruby
+Payple.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", request_key: "반환받은 PCD_PAY_REQKEY값")
+```
+
+### 환불하기
+```ruby
+Payple.refund(oid: "환불할 oid", pay_date: "YYYYMMDD 형식의 결제 일시 혹은 ruby Date, Time, DateTime 형식", refund_total: "환불할 금액. 총 금액보다 작으면 부분환불됨")
+```
+
+## 인증요청
+
 ### 간편결제(비밀번호, 일회성), 앱카드결제 가맹점 인증 요청
 배열의 첫번째 요소로 다음 결제 url, 두번째 요소로 인증과 관련된 정보가 출력된다.
 ```ruby
