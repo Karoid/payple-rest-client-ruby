@@ -33,16 +33,23 @@ end
 ## Usage
 
 ### 인증 URL 생성하기
+Rails 기준
 ```ruby
 # Controller 액션 생성
 def payple_auth
-  render json: Payple.auth_raw
+  render json: Payple.auth_raw({referer: request.protocol + request.host_with_port})
 end
 ```
 
 ### CERT 승인하기
+일반 결제 일 경우
 ```ruby
 Payple.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", request_key: "반환받은 PCD_PAY_REQKEY값")
+```
+
+정기 결제 일 경우
+```ruby
+Payple.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", request_key: "반환받은 PCD_PAY_REQKEY값", payer_id: "카드등록 후 리턴받은 빌링키(PCD_PAYER_ID)")
 ```
 
 ### 환불하기
@@ -93,6 +100,18 @@ Payple.payment(
 )
 ```
 
+### 정기결제 등록 카드
+등록 카드 조회
+```ruby
+Payple.payer(payer_id: "PCD_PAYER_ID 값").parsed_response
+=> {"PCD_PAY_RST"=>"success", "PCD_PAY_CODE"=>"0000", "PCD_PAY_MSG"=>"회원조회 성공", "PCD_PAY_TYPE"=>"card", "PCD_PAY_BANKACCTYPE"=>"개인", "PCD_PAYER_ID"=>"cVpMejdJVDliM0FrK3U5b3AyY2hOZz09", "...
+```
+
+등록 카드 삭제
+```ruby
+Payple.delete_payer(payer_id: "PCD_PAYER_ID 값").parsed_response
+=> {"PCD_PAY_RST"=>"success", "PCD_PAY_CODE"=>"0000", "PCD_PAY_MSG"=>"회원조회 성공", "PCD_PAY_TYPE"=>"card", "PCD_PAY_BANKACCTYPE"=>"개인", "PCD_PAYER_ID"=>"cVpMejdJVDliM0FrK3U5b3AyY2hOZz09", "...
+```
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

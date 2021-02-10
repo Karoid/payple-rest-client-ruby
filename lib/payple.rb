@@ -57,8 +57,11 @@ module Payple
       HTTParty.post(url, headers: headers, body: payload.to_json)
     end
 
+    # Confirm CERT type payment
+    # https://docs.payple.kr/card/pay/app-card
+    # https://docs.payple.kr/card/pay/regular
     def cert_confirm(options = {})
-      required_parameter = [:cert_url, :auth_key, :request_key]
+      required_parameter = [:cert_url, :auth_key, :request_key, :payer_id]
       other_payloads = options.reject { |key| required_parameter.include?(key) }
 
       payload = {
@@ -67,6 +70,9 @@ module Payple
         PCD_AUTH_KEY: options.fetch(:auth_key),
         PCD_PAY_REQKEY: options.fetch(:request_key),
       }
+      if options[:payer_id]
+        payload.merge!({PCD_PAYER_ID: options.fetch(:payer_id)})
+      end
       payload.merge!(other_payloads)
 
       HTTParty.post(options.fetch(:cert_url), headers: headers, body: payload.to_json)
@@ -93,6 +99,36 @@ module Payple
       HTTParty.post(url, headers: headers, body: payload.to_json)
     end
 
+    def payer(options = {})
+      required_parameter = [:payer_id, :payer_no]
+      other_payloads = options.reject { |key| required_parameter.include?(key) }
+
+      url, payload = auth({PCD_PAY_WORK: "PUSERINFO"})
+
+      payload.merge!({
+        PCD_PAYER_ID: options.fetch(:payer_id),
+        PCD_PAYER_NO: options[:payer_no]
+      })
+      payload.merge!(other_payloads)
+
+      HTTParty.post(url, headers: headers, body: payload.to_json)
+    end
+
+    def delete_payer(options = {})
+      required_parameter = [:payer_id, :payer_no]
+      other_payloads = options.reject { |key| required_parameter.include?(key) }
+
+      url, payload = auth({PCD_PAY_WORK: "PUSERDEL"})
+
+      payload.merge!({
+        PCD_PAYER_ID: options.fetch(:payer_id),
+        PCD_PAYER_NO: options[:payer_no]
+      })
+      payload.merge!(other_payloads)
+
+      HTTParty.post(url, headers: headers, body: payload.to_json)
+    end
+
     # authorization to Payple
     # 필수가 아닌 파라미터를 req_params로 넘겨주어야 한다
     # return values:
@@ -111,19 +147,26 @@ module Payple
     end
 
     def auth_raw(req_params = {})
+      required_parameter = [:referer]
+      other_req_params = req_params.reject { |key| required_parameter.include?(key) }
       url = "#{host}/php/auth.php"
       payload = {
-          "cst_id": config.cst_id,
-          "custKey": config.cust_key
+        "cst_id": config.cst_id,
+        "custKey": config.cust_key
       }
-      HTTParty.post(url, headers: headers, body: payload.merge(req_params).to_json).parsed_response
+      if req_params[:referer]
+        _headers = headers.merge({'referer': req_params[:referer]})
+      else
+        _headers = headers
+      end
+      HTTParty.post(url, headers: _headers, body: payload.merge(other_req_params).to_json).parsed_response
     end
 
     private
 
     def headers
       {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
           'Cache-Control': 'no-cache'
       }
     end
