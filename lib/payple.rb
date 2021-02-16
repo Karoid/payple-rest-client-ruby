@@ -129,6 +129,42 @@ module Payple
       HTTParty.post(url, headers: headers, body: payload.to_json)
     end
 
+    def payment_again(options = {})
+      required_parameter = [:pay_type, :payer_id, :goods_name, :pay_total]
+      optional_parameter = [:payer_no, :pay_month, :pay_year, :payer_name, :payer_email, :payer_hp]
+      parameters = required_parameter + optional_parameter
+      other_payloads = options.reject { |key| parameters.include?(key) }
+
+      raise ArgumentError("Invalid pay_type: pay_type must by :card or :transfer") unless [:card, :transfer].include? options.fetch(:pay_type).to_sym
+
+      if options[:pay_year].present? && options[:pay_month].present?
+        url, payload = auth({PCD_REGULAR_FLAG: "Y", PCD_PAY_TYPE: options.fetch(:pay_type)})
+        payload.merge!({
+          PCD_REGULAR_FLAG: "Y",
+          PCD_PAY_YEAR: options.fetch(:pay_year),
+          PCD_PAY_MONTH: options.fetch(:pay_month)
+        })
+      else
+        url, payload = auth({PCD_SIMPLE_FLAG: "Y", PCD_PAY_TYPE: options.fetch(:pay_type)})
+        payload.merge!({
+          PCD_SIMPLE_FLAG: "Y",
+        })
+      end
+
+      payload.merge!({
+        PCD_PAY_TYPE: options.fetch(:pay_type),
+        PCD_PAYER_ID: options.fetch(:payer_id),
+        PCD_PAY_GOODS: options.fetch(:goods_name),
+        PCD_PAY_TOTAL: options.fetch(:pay_total),
+        PCD_PAYER_NO: options[:payer_no],
+        PCD_PAYER_NAME: options[:payer_name],
+        PCD_PAYER_HP: options[:payer_hp],
+        PCD_PAYER_EMAIL: options[:payer_email],
+      })
+
+      HTTParty.post(url, headers: headers, body: payload.to_json)
+    end
+
     # authorization to Payple
     # 필수가 아닌 파라미터를 req_params로 넘겨주어야 한다
     # return values:
