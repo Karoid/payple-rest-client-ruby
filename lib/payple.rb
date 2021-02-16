@@ -12,12 +12,14 @@ module Payple
     attr_accessor :cust_key
     attr_accessor :refund_key
     attr_accessor :is_test_mode
+    attr_accessor :referer
 
     def initialize
       @cst_id = nil
       @cust_key = nil
       @refund_key = nil
       @is_test_mode = false
+      @referer = nil
     end
   end
 
@@ -190,12 +192,7 @@ module Payple
         "cst_id": config.cst_id,
         "custKey": config.cust_key
       }
-      if req_params[:referer]
-        _headers = headers.merge({'referer': req_params[:referer]})
-      else
-        _headers = headers
-      end
-      HTTParty.post(url, headers: _headers, body: payload.merge(other_req_params).to_json).parsed_response
+      HTTParty.post(url, headers: headers, body: payload.merge(other_req_params).to_json).parsed_response
     end
 
     private
@@ -203,7 +200,8 @@ module Payple
     def headers
       {
           'Content-Type': 'application/json; charset=utf-8',
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache',
+          'referer': config.referer
       }
     end
 
