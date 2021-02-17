@@ -15,9 +15,9 @@ And then execute:
 
     $ bundle install
 
-Or install it yourself as:
+<!-- Or install it yourself as:
 
-    $ gem install payple
+    $ gem install payple -->
 
 ### Configuration
 
@@ -37,7 +37,7 @@ Rails 기준
 ```ruby
 # Controller 액션 생성
 def payple_auth
-  render json: Payple.auth_raw({referer: request.protocol + request.host_with_port})
+  render json: Payple.auth_raw
 end
 ```
 
@@ -126,6 +126,19 @@ pay_month, pay_year를 입력하지 않는다.
 ```ruby
 Payple.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_name: '재결제하는 상품명', pay_total: '결제 하는 상품 금액').parsed_response
 ```
+
+### 그 외 참고사항
+[페이플 공식 문서](https://docs.payple.kr/)에서 필수가 아닌 파라미터는 문서에 적힌 키 값을 함수의 인자로 넘기면 원하는 결과가 출력된다.
+
+다음은 CERT 승인하기의 예시이다.
+
+```ruby
+Payple.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", PCD_PAY_REQKEY: "반환받은 PCD_PAY_REQKEY값")
+```
+
+이런식으로 [페이플 공식 문서](https://docs.payple.kr/)에는 나와있고 이곳에는 설명이 없는 요청변수는 그냥 문서에 적힌 요청변수를 키로 설정하여 값을 넘길 수 있다.
+다만 필수 변수는 이 문서에 적힌대로 값을 넘겨야 GEM이 제대로 작동한다.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
@@ -134,7 +147,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/payple. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/payple/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/Karoid/payple-rest-client-ruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/Karoid/payple-rest-client-ruby/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -142,4 +155,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Payple project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/payple/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Payple project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/Karoid/payple-rest-client-ruby/blob/master/CODE_OF_CONDUCT.md).
