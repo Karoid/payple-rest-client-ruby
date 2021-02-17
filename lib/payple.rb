@@ -63,8 +63,10 @@ module Payple
     # https://docs.payple.kr/card/pay/app-card
     # https://docs.payple.kr/card/pay/regular
     def cert_confirm(options = {})
-      required_parameter = [:cert_url, :auth_key, :request_key, :payer_id]
-      other_payloads = options.reject { |key| required_parameter.include?(key) }
+      required_parameter = [:cert_url, :auth_key, :request_key]
+      optional_parameter = [:payer_id]
+      parameters = required_parameter + optional_parameter
+      other_payloads = options.reject { |key| parameters.include?(key) }
 
       payload = {
         PCD_CST_ID: config.cst_id,
@@ -102,8 +104,10 @@ module Payple
     end
 
     def payer(options = {})
-      required_parameter = [:payer_id, :payer_no]
-      other_payloads = options.reject { |key| required_parameter.include?(key) }
+      required_parameter = [:payer_id]
+      optional_parameter = [:payer_no]
+      parameters = required_parameter + optional_parameter
+      other_payloads = options.reject { |key| parameters.include?(key) }
 
       url, payload = auth({PCD_PAY_WORK: "PUSERINFO"})
 
@@ -117,8 +121,10 @@ module Payple
     end
 
     def delete_payer(options = {})
-      required_parameter = [:payer_id, :payer_no]
-      other_payloads = options.reject { |key| required_parameter.include?(key) }
+      required_parameter = [:payer_id]
+      optional_parameter = [:payer_no]
+      parameters = required_parameter + optional_parameter
+      other_payloads = options.reject { |key| parameters.include?(key) }
 
       url, payload = auth({PCD_PAY_WORK: "PUSERDEL"})
 
@@ -149,20 +155,21 @@ module Payple
       else
         url, payload = auth({PCD_SIMPLE_FLAG: "Y", PCD_PAY_TYPE: options.fetch(:pay_type)})
         payload.merge!({
-          PCD_SIMPLE_FLAG: "Y",
+          PCD_SIMPLE_FLAG: "Y"
         })
       end
 
       payload.merge!({
-        PCD_PAY_TYPE: options.fetch(:pay_type),
-        PCD_PAYER_ID: options.fetch(:payer_id),
-        PCD_PAY_GOODS: options.fetch(:goods_name),
-        PCD_PAY_TOTAL: options.fetch(:pay_total),
-        PCD_PAYER_NO: options[:payer_no],
-        PCD_PAYER_NAME: options[:payer_name],
-        PCD_PAYER_HP: options[:payer_hp],
+        PCD_PAY_TYPE:    options.fetch(:pay_type),
+        PCD_PAYER_ID:    options.fetch(:payer_id),
+        PCD_PAY_GOODS:   options.fetch(:goods_name),
+        PCD_PAY_TOTAL:   options.fetch(:pay_total),
+        PCD_PAYER_NO:    options[:payer_no],
+        PCD_PAYER_NAME:  options[:payer_name],
         PCD_PAYER_EMAIL: options[:payer_email],
+        PCD_PAYER_HP:    options[:payer_hp],
       })
+      payload.merge!(other_payloads)
 
       HTTParty.post(url, headers: headers, body: payload.to_json)
     end

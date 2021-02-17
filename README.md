@@ -112,6 +112,20 @@ Payple.payer(payer_id: "PCD_PAYER_ID 값").parsed_response
 Payple.delete_payer(payer_id: "PCD_PAYER_ID 값").parsed_response
 => {"PCD_PAY_RST"=>"success", "PCD_PAY_CODE"=>"0000", "PCD_PAY_MSG"=>"회원조회 성공", "PCD_PAY_TYPE"=>"card", "PCD_PAY_BANKACCTYPE"=>"개인", "PCD_PAYER_ID"=>"cVpMejdJVDliM0FrK3U5b3AyY2hOZz09", "...
 ```
+
+### 정기결제 재결제
+월 자동 결제 방지를 사용하는 경우  
+pay_month, pay_year를 입력한다.
+```ruby
+Payple.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_name: '재결제하는 상품명', pay_total: '결제 하는 상품 금액', pay_year: 2021, pay_month: 01).parsed_response
+=> {"PCD_PAY_RST"=>"success", "PCD_PAY_CODE"=>"0000", "PCD_PAY_MSG"=>"회원조회 성공", "PCD_PAY_TYPE"=>"card", "PCD_PAY_BANKACCTYPE"=>"개인", "PCD_PAYER_ID"=>"cVpMejdJVDliM0FrK3U5b3AyY2hOZz09", "...
+```
+
+월 자동 결제 방지를 사용하지 않는 경우  
+pay_month, pay_year를 입력하지 않는다.
+```ruby
+Payple.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_name: '재결제하는 상품명', pay_total: '결제 하는 상품 금액').parsed_response
+```
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
