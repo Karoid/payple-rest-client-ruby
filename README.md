@@ -29,6 +29,7 @@ Payple.configure do |config|
   config.is_test_mode = true
 end
 ```
+만약 테스트 상태라면 is_test_mode 값을 true로 설정한다.
 
 ## Usage
 
@@ -64,7 +65,7 @@ Payple.refund(oid: "환불할 oid", pay_date: "YYYYMMDD 형식의 결제 일시 
 ```ruby
 Payple.auth
 => [
-  "https://testcpay.payple.kr/index.php?ACT_=PAYM&CPAYVER=202102051731", 
+  "https://democpay.payple.kr/index.php?ACT_=PAYM&CPAYVER=202102051731", 
   {
     :PCD_CST_ID=>"N2hQWnYrZFpYc1crYnpiR1dTMzdzQT09", 
     :PCD_CUST_KEY=>"V3lNUzNXNU4wNW1uZlFMejFGdktyQT09", 
@@ -82,7 +83,7 @@ Payple.auth
 ```ruby
 Payple.auth({PCD_PAYCHK_FLAG: "Y"})
 => [
-  "https://testcpay.payple.kr/php/PayChkAct.php", 
+  "https://democpay.payple.kr/php/PayChkAct.php", 
   {
     :PCD_CST_ID=>"N2hQWnYrZFpYc1crYnpiR1dTMzdzQT09", 
     :PCD_CUST_KEY=>"V3lNUzNXNU4wNW1uZlFMejFGdktyQT09", 

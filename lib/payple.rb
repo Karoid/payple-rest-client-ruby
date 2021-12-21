@@ -5,7 +5,7 @@ require "httparty"
 
 module Payple
   PAYPLE_HOST = "https://cpay.payple.kr".freeze
-  PAYPLE_TEST_HOST = "https://testcpay.payple.kr".freeze
+  PAYPLE_TEST_HOST = "https://democpay.payple.kr".freeze
 
   class Config
     attr_accessor :cst_id
