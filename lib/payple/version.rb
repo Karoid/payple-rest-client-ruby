@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module Payple
-  VERSION = "0.1.1".freeze
+class Payple
+  VERSION = "0.2.0".freeze
 end

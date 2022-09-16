@@ -19,10 +19,12 @@ And then execute:
 
     $ gem install payple -->
 
+## 국내 결제
+
 ### Configuration
 
 ```ruby
-Payple.configure do |config|
+Payple.cpay.configure do |config|
   config.cst_id = 'test'
   config.cust_key = 'abcd1234567890'
   config.refund_key = 'a41ce010ede9fcbfb3be86b24858806596a9db68b79d138b147c3e563e1829a0'
@@ -38,24 +40,24 @@ Rails 기준
 ```ruby
 # Controller 액션 생성
 def payple_auth
-  render json: Payple.auth_raw
+  render json: Payple.cpay.auth_raw
 end
 ```
 
 ### CERT 승인하기
 일반 결제 일 경우
 ```ruby
-Payple.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", request_key: "반환받은 PCD_PAY_REQKEY값")
+Payple.cpay.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", request_key: "반환받은 PCD_PAY_REQKEY값")
 ```
 
 정기 결제 일 경우
 ```ruby
-Payple.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", request_key: "반환받은 PCD_PAY_REQKEY값", payer_id: "카드등록 후 리턴받은 빌링키(PCD_PAYER_ID)")
+Payple.cpay.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", request_key: "반환받은 PCD_PAY_REQKEY값", payer_id: "카드등록 후 리턴받은 빌링키(PCD_PAYER_ID)")
 ```
 
 ### 환불하기
 ```ruby
-Payple.refund(oid: "환불할 oid", pay_date: "YYYYMMDD 형식의 결제 일시 혹은 ruby Date, Time, DateTime 형식", refund_total: "환불할 금액. 총 금액보다 작으면 부분환불됨")
+Payple.cpay.refund(oid: "환불할 oid", pay_date: "YYYYMMDD 형식의 결제 일시 혹은 ruby Date, Time, DateTime 형식", refund_total: "환불할 금액. 총 금액보다 작으면 부분환불됨")
 ```
 
 ## 인증요청
@@ -63,7 +65,7 @@ Payple.refund(oid: "환불할 oid", pay_date: "YYYYMMDD 형식의 결제 일시 
 ### 간편결제(비밀번호, 일회성), 앱카드결제 가맹점 인증 요청
 배열의 첫번째 요소로 다음 결제 url, 두번째 요소로 인증과 관련된 정보가 출력된다.
 ```ruby
-Payple.auth
+Payple.cpay.auth
 => [
   "https://democpay.payple.kr/index.php?ACT_=PAYM&CPAYVER=202102051731", 
   {
@@ -81,7 +83,7 @@ Payple.auth
 
 배열의 첫번째 요소로 다음 결제 url, 두번째 요소로 인증과 관련된 정보가 출력된다.
 ```ruby
-Payple.auth({PCD_PAYCHK_FLAG: "Y"})
+Payple.cpay.auth({PCD_PAYCHK_FLAG: "Y"})
 => [
   "https://democpay.payple.kr/php/PayChkAct.php", 
   {
@@ -94,7 +96,7 @@ Payple.auth({PCD_PAYCHK_FLAG: "Y"})
 
 ### 결제 내역 조회
 ```ruby
-Payple.payment(
+Payple.cpay.payment(
   pay_type: :transfer,
   oid: 'test201804000001',
   pay_date: '20200320'
@@ -104,13 +106,13 @@ Payple.payment(
 ### 정기결제 등록 카드
 등록 카드 조회
 ```ruby
-Payple.payer(payer_id: "PCD_PAYER_ID 값").parsed_response
+Payple.cpay.payer(payer_id: "PCD_PAYER_ID 값").parsed_response
 => {"PCD_PAY_RST"=>"success", "PCD_PAY_CODE"=>"0000", "PCD_PAY_MSG"=>"회원조회 성공", "PCD_PAY_TYPE"=>"card", "PCD_PAY_BANKACCTYPE"=>"개인", "PCD_PAYER_ID"=>"cVpMejdJVDliM0FrK3U5b3AyY2hOZz09", "...
 ```
 
 등록 카드 삭제
 ```ruby
-Payple.delete_payer(payer_id: "PCD_PAYER_ID 값").parsed_response
+Payple.cpay.delete_payer(payer_id: "PCD_PAYER_ID 값").parsed_response
 => {"PCD_PAY_RST"=>"success", "PCD_PAY_CODE"=>"0000", "PCD_PAY_MSG"=>"회원조회 성공", "PCD_PAY_TYPE"=>"card", "PCD_PAY_BANKACCTYPE"=>"개인", "PCD_PAYER_ID"=>"cVpMejdJVDliM0FrK3U5b3AyY2hOZz09", "...
 ```
 
@@ -118,14 +120,14 @@ Payple.delete_payer(payer_id: "PCD_PAYER_ID 값").parsed_response
 월 자동 결제 방지를 사용하는 경우  
 pay_month, pay_year를 입력한다.
 ```ruby
-Payple.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_name: '재결제하는 상품명', pay_total: '결제 하는 상품 금액', pay_year: 2021, pay_month: 01).parsed_response
+Payple.cpay.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_name: '재결제하는 상품명', pay_total: '결제 하는 상품 금액', pay_year: 2021, pay_month: 01).parsed_response
 => {"PCD_PAY_RST"=>"success", "PCD_PAY_CODE"=>"0000", "PCD_PAY_MSG"=>"회원조회 성공", "PCD_PAY_TYPE"=>"card", "PCD_PAY_BANKACCTYPE"=>"개인", "PCD_PAYER_ID"=>"cVpMejdJVDliM0FrK3U5b3AyY2hOZz09", "...
 ```
 
 월 자동 결제 방지를 사용하지 않는 경우  
 pay_month, pay_year를 입력하지 않는다.
 ```ruby
-Payple.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_name: '재결제하는 상품명', pay_total: '결제 하는 상품 금액').parsed_response
+Payple.cpay.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_name: '재결제하는 상품명', pay_total: '결제 하는 상품 금액').parsed_response
 ```
 
 ### 그 외 참고사항
@@ -134,11 +136,15 @@ Payple.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_name:
 다음은 CERT 승인하기의 예시이다.
 
 ```ruby
-Payple.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", PCD_PAY_REQKEY: "반환받은 PCD_PAY_REQKEY값")
+Payple.cpay.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", PCD_PAY_REQKEY: "반환받은 PCD_PAY_REQKEY값")
 ```
 
 이런식으로 [페이플 공식 문서](https://docs.payple.kr/)에는 나와있고 이곳에는 설명이 없는 요청변수는 그냥 문서에 적힌 요청변수를 키로 설정하여 값을 넘길 수 있다.
 다만 필수 변수는 이 문서에 적힌대로 값을 넘겨야 GEM이 제대로 작동한다.
+
+## 해외 결제
+
+
 
 ## Development
 
