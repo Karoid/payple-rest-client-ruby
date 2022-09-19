@@ -67,14 +67,30 @@ module Payple::Gpay
     # refund
     # https://developer.payple.kr/global/payment-cancel
     def refund(options = {})
-      
+      required_parameter = [:service_oid, :pay_id, :comments, :totalAmount, :currency, :resultUrl]
+      other_payloads = options.reject { |key| required_parameter.include?(key) }
+
+      payment_data = payment(options.permit { |key| [:service_oid, :pay_id].include?(key) })
+
+      url = "#{host}/gpay/cancel"
+
+      payload = {
+        service_id: config.service_id
+        comments: payment_data.fetch(:comments),
+        totalAmount: options.fetch(:totalAmount),
+        currency: options[:currency] || 'USD',
+        resultUrl: options.fetch(:resultUrl)
+      }
+      payload.merge!(other_payloads)
+
+      HTTParty.post(url, headers: headers, body: payload.to_json)
     end
 
-    # get payer info
-
-    # delete payer info
-
     # pay again
+    def payment_again(options = {})
+      # required_parameter = [:comments, :billing_key, :securityCode, :pay_total]
+      # optional_parameter = [:payer_no, :pay_month, :pay_year, :payer_name, :payer_email, :payer_hp]
+    end
 
     # authorize
     def auth(req_params = {})
@@ -100,8 +116,8 @@ module Payple::Gpay
       other_req_params = req_params.reject { |key| required_parameter.include?(key) }
       url = "#{host}/gpay/oauth/1.0/token"
       payload = {
-        "service_id": config.cst_id,
-        "service_key": config.cust_key
+        "service_id": config.service_id,
+        "service_key": config.service_key,
         "code": req_params[:code]
       }
       if config.is_test_mode

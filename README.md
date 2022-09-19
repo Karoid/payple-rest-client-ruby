@@ -28,12 +28,12 @@ Payple.cpay.configure do |config|
   config.cst_id = 'test'
   config.cust_key = 'abcd1234567890'
   config.refund_key = 'a41ce010ede9fcbfb3be86b24858806596a9db68b79d138b147c3e563e1829a0'
+  config.referer = 'http://localhost:3000'
   config.is_test_mode = true
 end
 ```
 만약 테스트 상태라면 is_test_mode 값을 true로 설정한다.
-
-## Usage
+referer에 서비스 URL을 넣어야 한다
 
 ### 인증 URL 생성하기
 Rails 기준
@@ -144,6 +144,49 @@ Payple.cpay.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반
 
 ## 해외 결제
 
+### Configuration
+
+```ruby
+Payple.gpay.configure do |config|
+  config.service_id = 'demo'
+  config.service_key = 'abcd1234567890'
+  config.referer = 'http://localhost:3000'
+  config.is_test_mode = true
+end
+```
+만약 테스트 상태라면 is_test_mode 값을 true로 설정한다.
+referer에 서비스 URL을 넣어야 한다
+
+### 인증 토큰 생성해서 프론트에 보내주기
+Rails 기준
+```ruby
+# Controller 액션 생성
+def payple_auth
+  render json: Payple.gpay.auth
+end
+```
+
+access_token과 expires_in 의 배열을 응답한다.
+
+### [결제 정보 가져오기](https://developer.payple.kr/95003782-646b-4481-847d-30d116b367a7)
+```ruby
+Payple.gpay.payment(service_oid: "반환받은 service_oid")
+
+또는
+
+Payple.gpay.payment(pay_id: "반환받은 pay_id")
+```
+
+### [환불하기](https://developer.payple.kr/global/payment-cancel)
+```ruby
+Payple.gpay.refund(service_oid: "반환받은 service_oid", totalAmount: "환불할 금액", currency: "USD or KRW", resultUrl: '응답 받을 때 사용할 resultUrl')
+
+또는
+
+Payple.gpay.refund(pay_id: "반환받은 pay_id", totalAmount: "환불할 금액", currency: "USD or KRW", resultUrl: '응답 받을 때 사용할 resultUrl')
+```
+
+### [정기결제 재결제](https://developer.payple.kr/global/payment-window)
 
 
 ## Development
