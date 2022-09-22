@@ -131,7 +131,7 @@ Payple.cpay.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_
 ```
 
 ### 그 외 참고사항
-[페이플 공식 문서](https://docs.payple.kr/)에서 필수가 아닌 파라미터는 문서에 적힌 키 값을 함수의 인자로 넘기면 원하는 결과가 출력된다.
+[페이플 공식 문서](https://developer.payple.kr/)에서 필수가 아닌 파라미터는 문서에 적힌 키 값을 함수의 인자로 넘기면 원하는 결과가 출력된다.
 
 다음은 CERT 승인하기의 예시이다.
 
@@ -139,7 +139,7 @@ Payple.cpay.payment_again(pay_type: 'card', payer_id: 'PCD_PAYER_ID 값', goods_
 Payple.cpay.cert_confirm(cert_url: "반환받은 PCD_PAY_COFURL", auth_key: "반환받은 PCD_AUTH_KEY", PCD_PAY_REQKEY: "반환받은 PCD_PAY_REQKEY값")
 ```
 
-이런식으로 [페이플 공식 문서](https://docs.payple.kr/)에는 나와있고 이곳에는 설명이 없는 요청변수는 그냥 문서에 적힌 요청변수를 키로 설정하여 값을 넘길 수 있다.
+이런식으로 [페이플 공식 문서](https://developer.payple.kr/)에는 나와있고 이곳에는 설명이 없는 요청변수는 그냥 문서에 적힌 요청변수를 키로 설정하여 값을 넘길 수 있다.
 다만 필수 변수는 이 문서에 적힌대로 값을 넘겨야 GEM이 제대로 작동한다.
 
 ## 해외 결제
@@ -179,15 +179,21 @@ Payple.gpay.payment(pay_id: "반환받은 pay_id")
 
 ### [환불하기](https://developer.payple.kr/global/payment-cancel)
 ```ruby
-Payple.gpay.refund(service_oid: "반환받은 service_oid", totalAmount: "환불할 금액", currency: "USD or KRW", resultUrl: '응답 받을 때 사용할 resultUrl')
+Payple.gpay.refund(service_oid: "반환받은 service_oid", totalAmount: "환불할 금액", currency: "USD or KRW", resultUrl: '응답 받을 때 사용할 resultUrl(선택)')
 
 또는
 
-Payple.gpay.refund(pay_id: "반환받은 pay_id", totalAmount: "환불할 금액", currency: "USD or KRW", resultUrl: '응답 받을 때 사용할 resultUrl')
+Payple.gpay.refund(pay_id: "반환받은 pay_id", totalAmount: "환불할 금액", currency: "USD or KRW", resultUrl: '응답 받을 때 사용할 resultUrl(선택)')
 ```
 
 ### [정기결제 재결제](https://developer.payple.kr/global/payment-window)
+```ruby
+Payple.gpay.refund(service_oid: "기존에 저장했던 service_oid", comments: '상품명', totalAmount: "환불할 금액", currency: "USD or KRW", resultUrl: '응답 받을 때 사용할 resultUrl(선택)')
 
+또는
+
+Payple.gpay.refund(billing_key: "기존에 저장했던 billing_key", comments: '상품명', totalAmount: "환불할 금액", currency: "USD or KRW", resultUrl: '응답 받을 때 사용할 resultUrl(선택)')
+```
 
 ## Development
 

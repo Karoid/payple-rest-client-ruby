@@ -75,8 +75,8 @@ module Payple::Gpay
       url = "#{host}/gpay/cancel"
 
       payload = {
-        service_id: config.service_id
-        comments: payment_data.fetch(:comments),
+        service_id: config.service_id,
+        comments: remove_invalid_chars(payment_data.fetch(:comments)),
         totalAmount: options.fetch(:totalAmount),
         currency: options[:currency] || 'USD',
         resultUrl: options.fetch(:resultUrl)
@@ -87,9 +87,44 @@ module Payple::Gpay
     end
 
     # pay again
+    # service_oid를 제공하거나, billing_key를 제공해야 한다
     def payment_again(options = {})
-      # required_parameter = [:comments, :billing_key, :securityCode, :pay_total]
-      # optional_parameter = [:payer_no, :pay_month, :pay_year, :payer_name, :payer_email, :payer_hp]
+      required_parameter = [:comments, :totalAmount, :currency]
+      optional_parameter = [:billing_key, :service_oid, :securityCode, :firstName, :lastName, :country, :administrativeArea, :locality, :address1, :postalCode, :email, :phoneNumber, :resultUrl]
+      parameters = required_parameter + optional_parameter
+      other_payloads = options.reject { |key| parameters.include?(key) }
+
+      if options[:service_oid].present?
+        payment_data = payment(service_oid: options.fetch(:service_oid))
+        options.billing_key = payment_data.fetch(:billing_key)
+      end
+
+      raise ArgumentError("Invalid parameter: billing_key or service_oid must be included") if options[:billing_key].nil?
+
+      url = "#{host}/gpay/billingKey"
+
+      payload = {
+        service_id: config.service_id,
+        service_oid: options[:service_oid],
+        comments: remove_invalid_chars(payment_data.fetch(:comments)),
+        billing_key: options.fetch(:billing_key),
+        securityCode: options[:securityCode],
+        totalAmount: options.fetch(:totalAmount),
+        currency: options[:currency] || 'USD',
+        firstName: options[:firstName],
+        lastName: options[:lastName],
+        country: options[:country],
+        administrativeArea: options[:administrativeArea],
+        locality: options[:locality],
+        address1: options[:address1],
+        postalCode: options[:postalCode],
+        email: options[:email],
+        phoneNumber: options[:phoneNumber],
+        resultUrl: options.fetch(:resultUrl)
+      }
+      payload.delete_if{ |k,v| optional_parameter.include?(k) && v.nil? }
+
+      HTTParty.post(url, headers: headers, body: payload.to_json)
     end
 
     # authorize
@@ -145,6 +180,10 @@ module Payple::Gpay
         'referer': config.referer,
         'Authorization': "Bearer #{get_token(req_params)}"
       }
+    end
+
+    def remove_invalid_chars(comment)
+      return comment.gsub(/[^ㄱ-힣A-z ',\-_&\.]/,'_')
     end
   end
 
