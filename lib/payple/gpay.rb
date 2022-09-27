@@ -3,8 +3,8 @@
 require "httparty"
 
 module Payple::Gpay
-  PAYPLE_HOST = "https://cpay.payple.kr".freeze
-  PAYPLE_TEST_HOST = "https://democpay.payple.kr".freeze
+  PAYPLE_HOST = "https://api.payple.kr".freeze
+  PAYPLE_TEST_HOST = "https://demo-api.payple.kr".freeze
 
   class Config
     attr_accessor :service_id
@@ -130,16 +130,23 @@ module Payple::Gpay
     # authorize
     def auth(req_params = {})
       res = request_token(req_params)
+      case res.code
+      when 404
+        raise res.to_s
+      when 500
+        raise res.to_s
+      end
       raise "Invalid Authorize Response : #{res["message"]}" unless res["result"] === 'T0000'
-      return res["access_token"], res["expires_in"]
+      return res.to_h.merge({service_id: config.service_id})
     end
 
     def get_token(req_params = {})
       if config.token_expires_in < Time.now
         request_send_time = Time.now
         token_padding_time = 10.seconds
-        config.token, expires_in_seconds = auth(req_params)
-
+        res = auth(req_params)
+        config.token = res["access_token"]
+        expires_in_seconds = res["expires_in"]
         config.token_expires_in = request_send_time + expires_in_seconds.to_i.seconds - token_padding_time
       end
       return config.token
@@ -160,7 +167,7 @@ module Payple::Gpay
           "payCls": "demo"
         })
       end
-      HTTParty.post(url, headers: headers_without_token, body: payload.merge(other_req_params).to_json).parsed_response
+      HTTParty.post(url, headers: headers_without_token, body: payload.merge(other_req_params).to_json)
     end
 
     private
