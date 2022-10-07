@@ -95,7 +95,7 @@ module Payple::Cpay
         PCD_REFUND_KEY: config.refund_key,
         PCD_PAY_OID: options.fetch(:oid),
         PCD_PAY_DATE: pay_date,
-        PCD_REFUND_TOTAL: options.fetch(:refund_total)
+        PCD_REFUND_TOTAL: options.fetch(:refund_total).to_i
       })
       payload.merge!(other_payloads)
 
@@ -162,7 +162,7 @@ module Payple::Cpay
         PCD_PAY_TYPE:    options.fetch(:pay_type),
         PCD_PAYER_ID:    options.fetch(:payer_id),
         PCD_PAY_GOODS:   options.fetch(:goods_name),
-        PCD_PAY_TOTAL:   options.fetch(:pay_total),
+        PCD_PAY_TOTAL:   options.fetch(:pay_total).to_i,
         PCD_PAYER_NO:    options[:payer_no],
         PCD_PAYER_NAME:  options[:payer_name],
         PCD_PAYER_EMAIL: options[:payer_email],
