@@ -50,15 +50,15 @@ module Payple::Gpay
       other_payloads = options.reject { |key| required_parameter.include?(key) }
 
       # validate params
-      raise ArgumentError("Invalid params: service_oid or pay_id parameter needed") unless options.fetch(:service_oid).present? || options.fetch(:pay_id).present?
+      raise ArgumentError.new("Invalid params: service_oid or pay_id parameter needed") unless options[:service_oid].present? || options[:pay_id].present?
 
       url = "#{host}/gpay/paymentResult"
 
       payload = {
         "service_id": config.service_id
       }
-      payload.merge!({"service_oid": options.fetch(:service_oid)}) if options.fetch(:service_oid)
-      payload.merge!({"pay_id": options.fetch(:pay_id)}) if options.fetch(:pay_id)
+      payload.merge!({"service_oid": options[:service_oid]}) if options[:service_oid]
+      payload.merge!({"pay_id": options[:pay_id]}) if options[:pay_id]
       payload.merge!(other_payloads)
 
       HTTParty.post(url, headers: headers, body: payload.to_json)
@@ -66,20 +66,25 @@ module Payple::Gpay
 
     # refund
     # https://developer.payple.kr/global/payment-cancel
+    # comments를 넣지 않으면 이전 결제 내역 그대로 comments가 따라감
+    # pay_id 혹은 service_oid를 넘겨야함
+    # 공식 문서에 써있는 것과는 다르게 resultUrl을 필수로 넘겨야함
     def refund(options = {})
       required_parameter = [:service_oid, :pay_id, :comments, :totalAmount, :currency, :resultUrl]
       other_payloads = options.reject { |key| required_parameter.include?(key) }
 
-      payment_data = payment(options.permit { |key| [:service_oid, :pay_id].include?(key) })
+      payment_data = payment(options.slice(:service_oid, :pay_id))
 
       url = "#{host}/gpay/cancel"
 
       payload = {
         service_id: config.service_id,
-        comments: remove_invalid_chars(payment_data.fetch(:comments)),
+        service_oid: payment_data.fetch('info').fetch('service_oid'),
+        pay_id: payment_data.fetch('api_id'),
+        comments: remove_invalid_chars(options[:comments] || payment_data.fetch('info').fetch('comments')),
         totalAmount: options.fetch(:totalAmount),
         currency: options[:currency] || 'USD',
-        resultUrl: options.fetch(:resultUrl)
+        resultUrl: options[:resultUrl]
       }
       payload.merge!(other_payloads)
 
@@ -87,26 +92,27 @@ module Payple::Gpay
     end
 
     # pay again
+    # comments를 넣지 않고 service_oid를 제공했으면 이전 결제 내역 그대로 comments가 따라감
     # service_oid를 제공하거나, billing_key를 제공해야 한다
     def payment_again(options = {})
       required_parameter = [:comments, :totalAmount, :currency]
       optional_parameter = [:billing_key, :service_oid, :securityCode, :firstName, :lastName, :country, :administrativeArea, :locality, :address1, :postalCode, :email, :phoneNumber, :resultUrl]
       parameters = required_parameter + optional_parameter
       other_payloads = options.reject { |key| parameters.include?(key) }
+      payment_data = {}
 
       if options[:service_oid].present?
         payment_data = payment(service_oid: options.fetch(:service_oid))
-        options.billing_key = payment_data.fetch(:billing_key)
+        options[:billing_key] = payment_data.fetch('info').fetch('billing_key')
       end
 
-      raise ArgumentError("Invalid parameter: billing_key or service_oid must be included") if options[:billing_key].nil?
+      raise ArgumentError.new("Invalid parameter: billing_key or service_oid must be included") if options[:billing_key].nil?
 
       url = "#{host}/gpay/billingKey"
 
       payload = {
         service_id: config.service_id,
-        service_oid: options[:service_oid],
-        comments: remove_invalid_chars(payment_data.fetch(:comments)),
+        comments: remove_invalid_chars(options[:comments] || payment_data.fetch('info').fetch('comments')),
         billing_key: options.fetch(:billing_key),
         securityCode: options[:securityCode],
         totalAmount: options.fetch(:totalAmount),
@@ -120,9 +126,14 @@ module Payple::Gpay
         postalCode: options[:postalCode],
         email: options[:email],
         phoneNumber: options[:phoneNumber],
-        resultUrl: options.fetch(:resultUrl)
+        resultUrl: options[:resultUrl]
       }
       payload.delete_if{ |k,v| optional_parameter.include?(k) && v.nil? }
+      # puts "URL: #{url}"
+      # puts "header:"
+      # puts headers.to_json
+      # puts "payload:"
+      # puts payload.to_json
 
       HTTParty.post(url, headers: headers, body: payload.to_json)
     end

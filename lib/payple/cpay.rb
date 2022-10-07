@@ -48,7 +48,7 @@ module Payple::Cpay
       other_payloads = options.reject { |key| required_parameter.include?(key) }
 
       # validate pay_type
-      raise ArgumentError("Invalid pay_type: pay_type must by :card or :transfer") unless [:card, :transfer].include? options.fetch(:pay_type).to_sym
+      raise ArgumentError.new("Invalid pay_type: pay_type must by :card or :transfer") unless [:card, :transfer].include? options.fetch(:pay_type).to_sym
 
       url, payload = auth({PCD_PAYCHK_FLAG: "Y"})
       payload.merge!({PCD_PAYCHK_FLAG: "Y", PCD_PAY_TYPE: options.fetch(:pay_type),
@@ -142,7 +142,7 @@ module Payple::Cpay
       parameters = required_parameter + optional_parameter
       other_payloads = options.reject { |key| parameters.include?(key) }
 
-      raise ArgumentError("Invalid pay_type: pay_type must by :card or :transfer") unless [:card, :transfer].include? options.fetch(:pay_type).to_sym
+      raise ArgumentError.new("Invalid pay_type: pay_type must by :card or :transfer") unless [:card, :transfer].include? options.fetch(:pay_type).to_sym
 
       if options[:pay_year].present? && options[:pay_month].present?
         url, payload = auth({PCD_REGULAR_FLAG: "Y", PCD_PAY_TYPE: options.fetch(:pay_type)})
