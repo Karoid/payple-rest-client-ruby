@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "1e89965c-327a-4b42-bf3a-9f2b803e5270",
+    "colName": "cpay_auth",
+    "created": "2022-12-29T07:05:24.006Z",
+    "sortNum": 20000,
+    "folders": []
+  },
+  {
+    "_id": "a74d135b-0216-4157-b965-9a838fb9d8ca",
+    "colName": "cpay",
+    "created": "2022-12-29T07:20:20.231Z",
+    "sortNum": 30000,
+    "folders": []
+  }
+]

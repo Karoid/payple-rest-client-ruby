@@ -8,6 +8,9 @@
 /tmp/
 
 test.rb
+.vscode/launch.json
+.vscode/settings.json
+.vscode/**/*.env
 
 # rspec failure tracking
 .rspec_status

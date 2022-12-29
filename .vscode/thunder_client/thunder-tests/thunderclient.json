@@ -1,0 +1,104 @@
+[
+  {
+    "_id": "702bb334-5f9d-4dfa-921e-98a67078310b",
+    "colId": "1e89965c-327a-4b42-bf3a-9f2b803e5270",
+    "containerId": "",
+    "name": "default_auth",
+    "url": "{{cpay_host}}/php/auth.php",
+    "method": "GET",
+    "sortNum": 20000,
+    "created": "2022-12-29T07:05:38.281Z",
+    "modified": "2022-12-29T07:11:25.006Z",
+    "headers": [
+      {
+        "name": "Referer",
+        "value": "{{REFERRER}}"
+      },
+      {
+        "name": "Content-Type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "Cache-Control",
+        "value": "no-cache"
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\r\n  \"cst_id\": \"{{PAYPLE_CST_ID}}\",\r\n  \"custKey\": \"{{PAYPLE_CUST_KEY}}\"\r\n}",
+      "form": []
+    },
+    "tests": []
+  },
+  {
+    "_id": "a05fbc50-aaad-4b98-b2c8-22f0b375775b",
+    "colId": "1e89965c-327a-4b42-bf3a-9f2b803e5270",
+    "containerId": "",
+    "name": "payment_again_auth",
+    "url": "{{cpay_host}}/php/auth.php",
+    "method": "GET",
+    "sortNum": 30000,
+    "created": "2022-12-29T07:11:48.384Z",
+    "modified": "2022-12-29T07:36:22.447Z",
+    "headers": [
+      {
+        "name": "Referer",
+        "value": "{{REFERRER}}"
+      },
+      {
+        "name": "Content-Type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "Cache-Control",
+        "value": "no-cache"
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"cst_id\": \"{{PAYPLE_CST_ID}}\",\n  \"custKey\": \"{{PAYPLE_CUST_KEY}}\",\n  \"PCD_SIMPLE_FLAG\": \"Y\",\n  \"PCD_PAY_TYPE\": \"card\"\n}",
+      "form": []
+    },
+    "tests": []
+  },
+  {
+    "_id": "1c11b494-0ce5-402b-bf72-93d2f8ce30c3",
+    "colId": "a74d135b-0216-4157-b965-9a838fb9d8ca",
+    "containerId": "",
+    "name": "payment_again",
+    "url": "{{cpay_host}}/php/SimplePayCardAct.php?ACT_=PAYM",
+    "method": "GET",
+    "sortNum": 5000,
+    "created": "2022-12-29T07:20:33.438Z",
+    "modified": "2022-12-29T07:45:02.488Z",
+    "headers": [
+      {
+        "name": "Referer",
+        "value": "{{REFERRER}}"
+      },
+      {
+        "name": "Content-Type",
+        "value": "application/json; charset=utf-8"
+      },
+      {
+        "name": "Cache-Control",
+        "value": "no-cache"
+      }
+    ],
+    "params": [
+      {
+        "name": "ACT_",
+        "value": "PAYM",
+        "isPath": false
+      }
+    ],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"PCD_CST_ID\": \"payment_again_auth로부터 값 입력\",\n  \"PCD_CUST_KEY\": \"payment_again_auth로부터 값 입력\",\n  \"PCD_AUTH_KEY\": \"payment_again_auth로부터 값 입력=\",\n  \"PCD_SIMPLE_FLAG\": \"Y\",\n  \"PCD_PAY_TYPE\": \"card\",\n  \"PCD_PAYER_ID\": \"재결제 토큰 값 입력\",\n  \"PCD_PAY_GOODS\": \"값 입력\",\n  \"PCD_PAY_TOTAL\": \"값 입력\",\n  \"PCD_PAYER_NO\": \"값 입력\",\n  \"PCD_PAYER_NAME\": \"값 입력력\",\n  \"PCD_PAYER_EMAIL\": \"값 입력\",\n  \"PCD_PAYER_HP\": \"값 입력\"\n}",
+      "form": []
+    },
+    "tests": []
+  }
+]

@@ -1,0 +1,39 @@
+[
+  {
+    "_id": "8159223f-b145-497f-b4e8-5e4873538213",
+    "name": "production",
+    "default": true,
+    "sortNum": 10000,
+    "created": "2022-12-29T06:52:37.445Z",
+    "modified": "2022-12-29T06:52:37.445Z",
+    "data": [
+      {
+        "name": "cpay_host",
+        "value": "https://cpay.payple.kr"
+      },
+      {
+        "name": "gpay_host",
+        "value": "https://api.payple.kr"
+      }
+    ],
+    "envFile": "../production.env"
+  },
+  {
+    "_id": "0c94d757-2a71-4186-8a15-161462a669e8",
+    "name": "test",
+    "default": false,
+    "sortNum": 20000,
+    "created": "2022-12-29T07:53:41.249Z",
+    "modified": "2022-12-29T07:53:41.249Z",
+    "data": [
+      {
+        "name": "cpay_host",
+        "value": "https://cpay.payple.kr"
+      },
+      {
+        "name": "gpay_host",
+        "value": "https://api.payple.kr"
+      }
+    ]
+  }
+]

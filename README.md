@@ -201,6 +201,24 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
+### Testing Payple APIs
+다음 단계를 따라가면 Vscode의 ThunderClient 확장 프로그램으로 페이플 API를 직접 테스트해볼 수 있습니다.
+1. `.vscode/defaultSettings.json`를  `.vscode/settings.json`으로 복제합니다
+2. vscode에서 `rangav.vscode-thunder-client` 확장 플러그인을 설치합니다.
+3. `.vscode/thunder_client/production.env`에는 실사용 환경 변수 설정을, `.vscode/thunder_client/test.env`에는 개발환경용 환경 변수 설정을 다음과 같은 형식으로 작성합니다
+```env
+PAYPLE_CST_ID: "example"
+PAYPLE_CUST_KEY: "example"
+PAYPLE_REFUND_KEY: "example"
+
+PAYPLE_SERVICE_ID: example
+PAYPLE_SERVICE_KEY: example
+
+REFERRER: https://www.example.com
+```
+4. vscode를 재시작하면 thunder-client 탭에서 사전에 작성된 API들을 활용할 수 있습니다.
+
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/Karoid/payple-rest-client-ruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/Karoid/payple-rest-client-ruby/blob/master/CODE_OF_CONDUCT.md).
